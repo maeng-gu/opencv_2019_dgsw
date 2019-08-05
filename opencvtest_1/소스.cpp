@@ -1,3 +1,4 @@
+//사진 보여주기 및 버전 보여주기
 #include "opencv2/opencv.hpp"
 #include <iostream>
 
