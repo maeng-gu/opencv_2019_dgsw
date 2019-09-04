@@ -24,6 +24,14 @@ int main() {
 
 	Mat img8 = Mat::eye(480, 640, CV_32FC1);
 
+	Mat img15 = imread("apple.jpg");
+	Mat img16;
+	img15.copyTo(img16); //딥카피 -> 안 모든 내용을 복사
+	Mat img17 = img15.clone(); //딥카피
+	Mat img18 = img15; //얇은복사
+
+	img15 = Scalar(255, 255, 255) - img15;//반전시키기
+
 	float data[] = { 1,2,3,4,5,6 };
 	Mat img9(2, 3, CV_32FC1, data);
 
@@ -32,6 +40,11 @@ int main() {
 	imshow("img3", img3);
 	imshow("img4", img4);
 	imshow("img5", img5);
+
+	imshow("img15", img15);
+	imshow("img16", img16);
+	imshow("img17", img17);
+	imshow("img18", img18);
 
 	waitKey();
 
