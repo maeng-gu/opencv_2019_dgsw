@@ -12,11 +12,11 @@ int main() {
 
 	Mat mat(1000, 1000, CV_8UC3);
 
-	for (int i = 0; i < 1000; i+=2)
+	for (int i = 0; i < 1000; i+=10)
 	{
-		for (int j = 0; j < 1000; j+=2)
+		for (int j = 0; j < 1000; j+=10)
 		{
-			Mat m1 = mat(Range(i, i+2), Range(j, j+2));
+			Mat m1 = mat(Range(i, i+10), Range(j, j+10));
 			m1 = Scalar(rand() & 0xff, rand() & 0xff, rand() & 0xff);
 			//랜덤으로 색을 넣는다.
 		}
