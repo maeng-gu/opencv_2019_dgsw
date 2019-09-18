@@ -1,0 +1,65 @@
+#include "opencv2/opencv.hpp"
+#include <iostream>
+#include <DirectXMath.h>
+#include <stdlib.h>
+#include <ppl.h>
+
+
+using namespace cv;
+using namespace std;
+
+void main()
+{
+	VideoCapture cap(0);
+	Mat frame, edited, editedR, editedG, editedB;
+
+	assert(cap.isOpened());
+
+	cout << cvRound(cap.get(CAP_PROP_FRAME_WIDTH)) << " x " << cvRound(cap.get(CAP_PROP_FRAME_HEIGHT)) << endl;
+
+
+	int width = cap.get(CAP_PROP_FRAME_WIDTH);
+	int height = cap.get(CAP_PROP_FRAME_HEIGHT);
+	double fps = cap.get(CAP_PROP_FPS);
+
+	int fourcc = VideoWriter::fourcc('D', 'I', 'V', 'X');
+	int delay = cvRound(1000 / fps);
+	VideoWriter output0("00.avi", fourcc, fps, Size(width, height));
+	edited = Mat(width, height, CV_8UC3);
+	editedR = Mat(width, height, CV_8UC1); //초기화
+	editedG = Mat(width, height, CV_8UC1);
+	editedB = Mat(width, height, CV_8UC1);
+
+
+
+	while (true) {
+		cap >> frame;
+
+		if (frame.empty()) break;
+
+		concurrency::parallel_for(
+			0, frame.cols, [&](int x) {
+			for (int y = 0; y < frame.rows; ++y)
+			{
+				auto org = frame.at<Vec3b>(y, x);
+
+				edited.at<Vec3b>(x, y) = org;
+				editedR.at<unsigned char>(x, y) = org[2];
+				editedG.at<unsigned char>(x, y) = org[1];
+				editedB.at<unsigned char>(x, y) = org[0];
+			}
+		}
+		);
+
+		output0 << edited.t();
+		imshow("1", edited.t()); //view_cam
+		imshow("2", editedR.t()); //view_cam //rgb적용 띄우기
+		imshow("3", editedG.t()); //view_cam
+		imshow("4", editedB.t()); //view_cam
+
+		int get = waitKey(1);
+		if (get == 27) break;
+	}
+
+
+}
