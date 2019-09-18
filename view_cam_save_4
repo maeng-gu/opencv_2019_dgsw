@@ -1,0 +1,78 @@
+#include "opencv2/opencv.hpp"
+#include <iostream>
+#include <DirectXMath.h>
+#include <stdlib.h>
+#include <ppl.h>
+
+
+using namespace cv;
+using namespace std;
+
+void main()
+{
+	VideoCapture cap(0);
+	Mat frame, edited;
+
+	assert(cap.isOpened());
+
+	cout << cvRound(cap.get(CAP_PROP_FRAME_WIDTH)) << " x " << cvRound(cap.get(CAP_PROP_FRAME_HEIGHT)) << endl;
+
+
+	int width = cap.get(CAP_PROP_FRAME_WIDTH);
+	int height = cap.get(CAP_PROP_FRAME_HEIGHT);
+	double fps = cap.get(CAP_PROP_FPS);
+
+	int fourcc = VideoWriter::fourcc('D', 'I', 'V', 'X');
+	int delay = cvRound(1000 / fps);
+	VideoWriter output0("00.avi", fourcc, fps, Size(320, 240));
+	VideoWriter output1("01.avi", fourcc, fps, Size(320, 240));
+	VideoWriter output2("02.avi", fourcc, fps, Size(320, 240));
+	VideoWriter output3("03.avi", fourcc, fps, Size(320, 240));
+
+
+	edited = Mat(width, height, CV_8UC3);
+
+
+
+
+	while (true) {
+		cap >> frame;
+
+		if (frame.empty()) break;
+
+		concurrency::parallel_for(
+			0, frame.cols, [&](int x) {
+			for (int y = 0; y < frame.rows; ++y)
+			{
+				auto org = frame.at<Vec3b>(y, x);
+
+				edited.at<Vec3b>(x, y) = org;
+			}
+		}
+		);
+
+
+
+		Mat half = edited.t();
+		Mat halfed = half(Rect(0, 0, 320, 240));
+		Mat halfed1 = half(Rect(320, 240, 320, 240));
+		Mat halfed2 = half(Rect(320, 0, 320, 240));
+		Mat halfed3 = half(Rect(0, 240, 320, 240));
+
+
+		imshow("1", halfed); //view_cam
+		imshow("2", halfed1); //view_cam //rgb적용 띄우기
+		imshow("3", halfed2); //view_cam
+		imshow("4", halfed3); //view_cam
+
+		output0 << halfed;
+		output1 << halfed1;
+		output2 << halfed2;
+		output3 << halfed3;
+
+		int get = waitKey(1);
+		if (get == 27) break;
+	}
+
+
+}
