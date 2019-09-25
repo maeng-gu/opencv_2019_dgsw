@@ -1,0 +1,32 @@
+#include "opencv2/opencv.hpp"
+#include <iostream>
+
+using namespace cv;
+using namespace std;
+
+void on_level_change(int pos, void* userdata);
+//Debug x64 혹은 Release x64 권장
+int main() {
+	Mat img = Mat::zeros(400, 400, CV_8UC1);
+	img = 500; // => 255 max
+	img.at<uchar>(0, 0) = saturate_cast<uchar>(500);
+	for (int i = 0; i < img.row; i++) {
+		for (int j = 0; j < img.cols; j++)
+		{
+			//img.at<uchar>(i, j) = 300;
+			//img.at<uchar>(i, j) = saturate_cast<uchar>(500);
+		}
+	}
+	namedWindow("image");
+	createTrackbar("level", "image", 0, 16, on_level_change, (void*)&img);
+	imshow("image", img);
+	waitKey();
+	return 0;
+}
+
+
+void on_level_change(int pos, void* userdata) {
+	Mat img = *(Mat*)userdata;
+	img.setTo(pos * 16);
+	imshow("image", img);
+}
